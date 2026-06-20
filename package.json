@@ -18,7 +18,8 @@
     "dotenv": "^17.4.2",
     "ethers": "^6.17.0",
     "fastify": "^5.8.5",
-    "openai": "^6.44.0"
+    "openai": "^6.44.0",
+    "solc": "^0.8.35"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",

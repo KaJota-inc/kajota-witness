@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path'
 import Fastify from 'fastify'
 import { makeMemoryService, type ChatBlob, type VerdictBlob } from './lib/memory.js'
 import { deliberate } from './lib/jury.js'
+import { anchorVerdict, disputeIdOf, isAnchorEnabled } from './lib/anchor.js'
 
 const REQUIRED = ['ZG_RPC_URL', 'ZG_INDEXER_URL', 'WITNESS_DEPLOYER_PK', 'GROQ_API_KEY'] as const
 
@@ -141,6 +142,24 @@ async function main() {
     const write = await svc.writeVerdict(verdictBlob)
     const tVerdict = Date.now() - t2
 
+    let chainAnchor: Awaited<ReturnType<typeof anchorVerdict>> | null = null
+    let tAnchor = 0
+    if (isAnchorEnabled()) {
+      const t3 = Date.now()
+      try {
+        const disputeId = disputeIdOf(sellerId, buyerId, claim, verdict.ts)
+        chainAnchor = await anchorVerdict({
+          disputeId,
+          verdictRoot: write.cid,
+          ruling: verdict.ruling,
+          confidenceBps: Math.round(verdict.confidence * 10000),
+        })
+        tAnchor = Date.now() - t3
+      } catch (err) {
+        app.log.warn({ err }, '[anchor] failed; verdict still saved on 0G Storage')
+      }
+    }
+
     return reply.send({
       verdict,
       evidence: evidence.map((h) => ({
@@ -155,8 +174,14 @@ async function main() {
         verdictTxHash: write.txHash,
         verdictStorageScanUrl: write.storageScanUrl,
         verdictChainScanUrl: write.chainScanUrl,
+        chainAnchor,
       },
-      timings: { evidenceMs: tEvidence, juryMs: tJury, verdictWriteMs: tVerdict },
+      timings: {
+        evidenceMs: tEvidence,
+        juryMs: tJury,
+        verdictWriteMs: tVerdict,
+        anchorMs: tAnchor || undefined,
+      },
     })
   })
 

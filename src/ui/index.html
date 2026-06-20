@@ -218,10 +218,17 @@ function verdictCard(v, onChain, evidence, timings) {
           <div class="grid gap-1">${evidence.map(evBlock).join('')}</div>
         </div>
         <div class="bg-emerald-50 border border-emerald-200 rounded p-3">
-          <div class="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-1">Verdict anchored on 0G</div>
+          <div class="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-1">Verdict blob on 0G Storage</div>
           <a href="${onChain.verdictStorageScanUrl}" target="_blank" class="cid text-emerald-700 hover:text-emerald-800 break-all">${onChain.verdictCid}</a>
-          <div class="text-[11px] text-emerald-600 mt-1">tx: <a href="${onChain.verdictChainScanUrl}" target="_blank" class="hover:underline cid">${shortCid(onChain.verdictTxHash)}</a> · wrote in ${timings.verdictWriteMs}ms</div>
+          <div class="text-[11px] text-emerald-600 mt-1">storage tx: <a href="${onChain.verdictChainScanUrl}" target="_blank" class="hover:underline cid">${shortCid(onChain.verdictTxHash)}</a> · wrote in ${timings.verdictWriteMs}ms</div>
         </div>
+        ${onChain.chainAnchor ? `
+        <div class="bg-indigo-50 border border-indigo-200 rounded p-3">
+          <div class="text-xs font-semibold uppercase tracking-wider text-indigo-700 mb-1">Verdict anchored on 0G Chain</div>
+          <div class="text-[11px] text-indigo-600">contract <a href="https://chainscan-galileo.0g.ai/address/${onChain.chainAnchor.contractAddress ?? ''}" target="_blank" class="hover:underline cid">WitnessAnchor</a> · block ${onChain.chainAnchor.blockNumber ?? '?'} · ${timings.anchorMs ?? 0}ms</div>
+          <a href="${onChain.chainAnchor.chainScanUrl}" target="_blank" class="cid text-indigo-700 hover:text-indigo-800 break-all">${onChain.chainAnchor.txHash}</a>
+          <div class="text-[10px] text-indigo-500 mt-1 cid">disputeId: ${shortCid(onChain.chainAnchor.disputeId)}</div>
+        </div>` : ''}
       </div>
     </div>`
 }
