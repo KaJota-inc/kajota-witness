@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path'
 import Fastify from 'fastify'
 import { makeMemoryService, type ChatBlob, type VerdictBlob } from './lib/memory.js'
 import { deliberate } from './lib/jury.js'
-import { anchorVerdict, disputeIdOf, isAnchorEnabled } from './lib/anchor.js'
+import { anchorVerdict, disputeIdOf, isAnchorEnabled, getVerdictFromChain } from './lib/anchor.js'
 
 const REQUIRED = ['ZG_RPC_URL', 'ZG_INDEXER_URL', 'WITNESS_DEPLOYER_PK', 'GROQ_API_KEY'] as const
 
@@ -62,15 +62,17 @@ async function main() {
 
   const __dirname = dirname(fileURLToPath(import.meta.url))
   const uiHtml = readFileSync(join(__dirname, 'ui', 'index.html'), 'utf8')
+  const verifyHtml = readFileSync(join(__dirname, 'ui', 'verify.html'), 'utf8')
 
   app.get('/', async () => ({
     service: 'kajota-witness',
     network: '0G Galileo (chainId 16602)',
     routes: [
-      'GET /', 'GET /health', 'GET /ui',
+      'GET /', 'GET /health', 'GET /ui', 'GET /verify',
       'POST /memory', 'GET /memory',
       'POST /evidence/query',
       'POST /dispute',
+      'GET /verify/:cid',
     ],
   }))
 
@@ -78,6 +80,41 @@ async function main() {
 
   app.get('/ui', async (_req, reply) => {
     reply.type('text/html').send(uiHtml)
+  })
+
+  app.get('/verify', async (_req, reply) => {
+    reply.type('text/html').send(verifyHtml)
+  })
+
+  app.get<{ Params: { cid: string } }>('/verify/:cid', async (req, reply) => {
+    const { cid } = req.params
+    if (!/^0x[0-9a-fA-F]{64}$/.test(cid)) {
+      return reply.code(400).send({ error: 'cid must be 0x-prefixed 32-byte hex' })
+    }
+    const result = await svc.verify(cid)
+    let chain = null
+    if (result.disputeId && isAnchorEnabled()) {
+      try {
+        const onChain = await getVerdictFromChain(result.disputeId)
+        if (onChain) {
+          chain = {
+            ...onChain,
+            chainScanUrl: `https://chainscan-galileo.0g.ai/address/${onChain.contractAddress}`,
+            matchesStorageCid: onChain.verdictRoot.toLowerCase() === cid.toLowerCase(),
+          }
+        }
+      } catch (err) {
+        app.log.warn({ err }, '[verify] chain lookup failed')
+      }
+    }
+    return reply.send({
+      cid,
+      storageScanUrl: `https://storagescan-galileo.0g.ai/tx/${cid}`,
+      local: result.local,
+      storage: result.storage,
+      decrypted: result.decrypted,
+      chain,
+    })
   })
 
   app.post<{ Body: WriteChatBody }>('/memory', async (req, reply) => {
@@ -138,8 +175,9 @@ async function main() {
       dispute: { claim },
       verdict,
     }
+    const disputeId = disputeIdOf(sellerId, buyerId, claim, verdict.ts)
     const t2 = Date.now()
-    const write = await svc.writeVerdict(verdictBlob)
+    const write = await svc.writeVerdict(verdictBlob, disputeId)
     const tVerdict = Date.now() - t2
 
     let chainAnchor: Awaited<ReturnType<typeof anchorVerdict>> | null = null
@@ -147,7 +185,6 @@ async function main() {
     if (isAnchorEnabled()) {
       const t3 = Date.now()
       try {
-        const disputeId = disputeIdOf(sellerId, buyerId, claim, verdict.ts)
         chainAnchor = await anchorVerdict({
           disputeId,
           verdictRoot: write.cid,

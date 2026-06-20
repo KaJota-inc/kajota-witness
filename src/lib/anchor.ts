@@ -59,3 +59,27 @@ export async function anchorVerdict(input: AnchorInput): Promise<AnchorResult> {
 export function isAnchorEnabled(): boolean {
   return Boolean(process.env.WITNESS_ANCHOR_ADDRESS) && existsSync(ABI_PATH)
 }
+
+export type ChainVerdictRecord = {
+  verdictRoot: string
+  ruling: string
+  confidenceBps: number
+  ts: number
+  anchoredBy: string
+  contractAddress: string
+} | null
+
+export async function getVerdictFromChain(disputeId: string): Promise<ChainVerdictRecord> {
+  const contract = loadContract()
+  const r = await contract.getVerdict(disputeId)
+  const verdictRoot = r.verdictRoot ?? r[0]
+  if (!verdictRoot || verdictRoot === '0x' + '0'.repeat(64)) return null
+  return {
+    verdictRoot,
+    ruling: r.ruling ?? r[1],
+    confidenceBps: Number(r.confidenceBps ?? r[2]),
+    ts: Number(r.ts ?? r[3]),
+    anchoredBy: r.anchoredBy ?? r[4],
+    contractAddress: process.env.WITNESS_ANCHOR_ADDRESS!,
+  }
+}

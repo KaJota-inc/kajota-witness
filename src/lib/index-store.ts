@@ -15,6 +15,7 @@ export type IndexEntry = {
     ruling?: string
     confidence?: number
     evidenceCids?: string[]
+    disputeId?: string
   }
 }
 
