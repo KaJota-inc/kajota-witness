@@ -1,0 +1,120 @@
+# 0G Zero Cup — Round 1 submission text
+
+Paste-ready blocks for the arena form at https://0g.ai/arena/login. Adjust labels to whatever field names the form actually uses.
+
+---
+
+## Project name
+
+**Kajota Witness**
+
+## Tagline (≤ 80 chars)
+
+> Encrypted seller memory + AI jury for African micro-commerce — on 0G Galileo.
+
+## One-paragraph description
+
+Kajota Witness gives African micro-commerce sellers cross-session conversation memory that they actually own — encrypted client-side, content-addressed on 0G Storage. When an escrow dispute fires, a 3-LLM jury (prosecutor / defender / neutral) pulls those exact chats from 0G as evidence, deliberates, and writes the verdict as another encrypted blob to 0G Storage — with the verdict's root hash, ruling, and confidence committed publicly via the WitnessAnchor contract on 0G Chain. The on-chain `verdictRoot` is byte-identical to the storage CID, so anyone can cross-reference one against the other without trusting the server.
+
+## Long description
+
+### Problem
+
+African micro-commerce sellers chat with buyers across WhatsApp, Instagram DMs, and platform inboxes. None of those records are portable, none are seller-owned, and when escrow fires there's no neutral way to decide who's right. Platforms either side with whoever shouts loudest, or refer to centralized "trust & safety" pipelines that the seller has no visibility into.
+
+### What Witness does
+
+1. **Memory.** Every conversation Coach handles is AES-256-GCM encrypted client-side, uploaded as a content-addressed blob to 0G Storage, and indexed locally for retrieval-as-evidence. The encryption key never leaves the seller's environment.
+
+2. **Court.** When a dispute is filed, Witness embeds the buyer's claim, retrieves the top-K relevant past chats from the index, downloads + decrypts them from 0G, and hands them to three LLM jurors in parallel: a prosecutor (argues for the buyer), a defender (argues for the seller), and a neutral analyst. A judge model synthesizes a ruling: `refund_buyer | release_to_seller | split_50_50 | escalate_to_human`.
+
+3. **Anchor.** The verdict is encrypted, uploaded to 0G Storage as its own blob, AND committed on 0G Chain via the deployed `WitnessAnchor` contract — disputeId pseudonym, verdict root hash, ruling, and confidence basis points. The on-chain root matches the storage CID byte-for-byte.
+
+### Why 0G
+
+The Zero Cup rules require that 0G do real work — *"if it runs the same without it, that's a bolt-on and it doesn't qualify."* Witness has no fallback storage layer. Three independent 0G surfaces are each load-bearing:
+
+- **0G Storage** — every chat blob and every verdict blob. Remove it, the app has no memory.
+- **0G Chain (storage txs)** — settles every upload, issues every CID. Remove it, no provenance.
+- **0G Chain (WitnessAnchor)** — public commitment of each verdict. Remove it, every ruling becomes "trust me."
+
+## Tracks / categories
+
+Pick whichever the arena form offers that fits. Most likely matches:
+
+- AI agents
+- DeFi / commerce / payments
+- Storage / data
+- Tooling / infra
+
+## Built during the tournament window
+
+✅ **Yes — start to finish.** New repo created Fri Jun 19, 2026 evening. First commit pushed Sat Jun 20, 2026 evening (initial commit hash `4d68253`). No pre-existing product, no fork. Commit history starts at tournament-window initialization and runs continuously.
+
+## Public repo URL
+
+https://github.com/KaJota-inc/kajota-witness
+
+## Live build / demo
+
+- **Demo video (3 min):** [YOUR LOOM/YOUTUBE URL HERE — record per `docs/DEMO.md`]
+- **Local run instructions:** see `README.md` Quick Start section
+
+## On-chain artifacts (verifiable now)
+
+| Artifact | Link |
+|---|---|
+| WitnessAnchor contract | https://chainscan-galileo.0g.ai/address/0x2f1D3a881cfbeA01Cf55f3cAd125aA32Bf8cEC94 |
+| Contract deploy tx | https://chainscan-galileo.0g.ai/tx/0x2a5b4224ae342279c3c22384402195d3109a4d3ee9afa24a27c45a0e4d2ea784 |
+| Sample chat blob on 0G Storage | https://storagescan-galileo.0g.ai/tx/0xaf6e55e03d2b4d50b7b92e4ecd41207f3e9ce7a533feede3164409dbe79a43c9 |
+| Sample verdict blob on 0G Storage | https://storagescan-galileo.0g.ai/tx/0x4ad25660d1cec586b821d302aff42a8ef1b41af652753d457683f5a5ae81fd34 |
+| Sample verdict anchor tx | https://chainscan-galileo.0g.ai/tx/0xc71be3b624e5b78a3460de17cbf3525920dfedaace827ea540cf62a9ec33f352 |
+
+## Stack
+
+- **Runtime:** Node 22, TypeScript
+- **HTTP server:** Fastify 5
+- **0G:** `@0gfoundation/0g-storage-ts-sdk` v1.2.10 (Galileo Turbo indexer)
+- **Contract:** Solidity 0.8.20, compiled via `solc-js`, deployed via `ethers` ContractFactory (no Hardhat)
+- **Embeddings:** `@xenova/transformers` — `Xenova/all-MiniLM-L6-v2` (384 dims, runs in-process)
+- **Vector index:** JSON file + cosine top-K (replaceable; chosen for hackathon scale)
+- **LLM:** Groq `llama-3.3-70b-versatile` via OpenAI-compatible API (free tier)
+- **Encryption:** Node `crypto`, AES-256-GCM envelope
+- **UI:** Single static HTML page — Tailwind CDN + vanilla JS fetch. No build step.
+
+## Performance (verified)
+
+| Stage | Time |
+|---|---|
+| Chat blob upload to 0G Storage | ~17s |
+| Evidence query (embed + top-K download + decrypt) | ~6s |
+| Jury deliberation (3 jurors parallel + judge, Groq) | ~1.5s |
+| Verdict blob upload to 0G Storage | ~14s |
+| Verdict on-chain anchor | ~16s |
+| **End-to-end dispute (all of the above)** | **~38s** |
+
+## Cost
+
+$0. 0G testnet + Groq free tier.
+
+## Submission checklist
+
+- [ ] Recorded 3-min demo per `docs/DEMO.md`
+- [ ] Uploaded video to Loom / YouTube (unlisted is fine)
+- [ ] Repo is public on GitHub (✅ already done)
+- [ ] Replaced `[YOUR LOOM/YOUTUBE URL HERE]` above with real URL
+- [ ] Filled the arena form using these blocks
+- [ ] Submitted before Mon Jun 22, 2026 18:00 UTC (Round 1 deadline buffer)
+
+## Known limitations (transparency for judges)
+
+- **Retrieval quality on tiny corpora.** MiniLM-L6-v2 (384 dims) sometimes misranks when chats share lexical surface area (e.g., "shipping" vs "delivered"). Top-K=3 mitigates for jury use; a BM25+embedding hybrid is the proper fix and is out of scope for Round 1.
+- **No Mesh escrow integration yet.** The current `WitnessAnchor` contract records verdicts but does not release escrowed funds. Wiring to KaJota's existing Mesh escrow on Mantle Sepolia is the natural next step but out of scope for this round.
+- **JSON-file index.** SQLite or LibSQL is the obvious upgrade; not needed at hackathon scale.
+
+## What we'd build next
+
+1. **Coach client patch** — wire kajota-coach to POST every chat turn to Witness `/memory` in real time. ~30 lines of glue. Mesh & Witness then become the actual production memory layer for African sellers.
+2. **Mesh escrow integration** — when WitnessAnchor records a verdict, automatically call `releaseToSeller()` or `refundToBuyer()` on the existing Mesh escrow contracts. Closes the loop from chat → dispute → ruling → fund movement.
+3. **Hybrid retrieval** — BM25 + embedding cosine, weighted blend. Fixes the lexical-overlap miss documented in README.
+4. **Multi-seller scaling** — per-seller key derivation (HKDF on a Privy-managed root key), per-seller index sharding, optional 0G KV for the index itself (eat our own dogfood).
