@@ -36,7 +36,18 @@ The Zero Cup rules require that 0G do real work — *"if it runs the same withou
 
 - **0G Storage** — every chat blob and every verdict blob. Remove it, the app has no memory.
 - **0G Chain (storage txs)** — settles every upload, issues every CID. Remove it, no provenance.
-- **0G Chain (WitnessAnchor)** — public commitment of each verdict. Remove it, every ruling becomes "trust me."
+- **0G Chain (WitnessAnchor contract)** — public commitment of each verdict. Remove it, every ruling becomes "trust me."
+
+### Trustless verification
+
+The deployed `/verify/:cid` route runs **four independent cross-checks** on any 0G CID:
+
+1. **0G Storage existence** — attempt to download the blob from Galileo nodes
+2. **Local index match** — show what this Witness instance recorded about the CID
+3. **0G Chain anchor** (for verdicts) — call `WitnessAnchor.getVerdict(disputeId)` and surface a `matchesStorageCid` boolean that's true iff the on-chain `verdictRoot` is byte-identical to the storage CID
+4. **Decryption** — using the local key, reveal the original content
+
+A third party running their own Witness server can rely on checks 1 + 3 alone — those are sufficient to prove "the verdict that was published is byte-identical to the blob anyone can fetch from 0G." Without our chain anchor + storage stack, that proof has no substrate.
 
 ## Tracks / categories
 

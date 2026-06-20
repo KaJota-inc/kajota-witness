@@ -136,11 +136,13 @@ npm run start                      # boot Fastify server
 |---|---|---|
 | `GET /` | — | Service banner + route list |
 | `GET /health` | — | `{ok, ts}` |
-| `GET /ui` | — | Static HTML demo page |
+| `GET /ui` | — | Static HTML demo page (memory + dispute + verdict) |
+| `GET /verify` | — | Static HTML verify page (paste any CID → 4 cross-checks) |
 | `POST /memory` | `ChatBlob` | `WriteResult` — `{cid, txHash, storageScanUrl, chainScanUrl, summary}` |
 | `GET /memory` | `?kind=chat\|verdict&sellerId=...` | `{entries: EntrySummary[]}` (sorted desc by ts) |
 | `POST /evidence/query` | `{query, sellerId?, k?}` | `{query, count, hits[]}` — top-K with decrypted blobs |
 | `POST /dispute` | `{sellerId, buyerId?, claim, evidenceQuery?, k?}` | `{verdict, evidence, onChain, timings}` |
+| `GET /verify/:cid` | — | 4 cross-checks — `{storage, local, chain, decrypted}` with `chain.matchesStorageCid` boolean |
 
 ---
 
