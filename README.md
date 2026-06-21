@@ -8,14 +8,30 @@
 
 ![Demo — file dispute, jury deliberates, verdict anchored on 0G Storage + Chain, anyone can verify](docs/demo/witness-FULL-demo.gif)
 
+🎬 **Polished 30-second MP4 with title + outro cards:** [`docs/demo/witness-demo.mp4`](docs/demo/witness-demo.mp4) (520 KB)
+
 <details>
-<summary>Per-beat GIFs</summary>
+<summary>Per-beat GIFs + how the MP4 is built</summary>
 
 | Beat | GIF |
 |---|---|
 | Seed a new chat live on 0G | ![Seed](docs/demo/witness-1-seed.gif) |
 | File dispute → jury deliberates → verdict on both 0G surfaces | ![Dispute](docs/demo/witness-2-dispute.gif) |
 | Paste verdict CID into `/verify` → 4-way trustless cross-check | ![Verify](docs/demo/witness-3-verify-greens.gif) |
+
+Rebuild the MP4 (requires `ffmpeg` + `python3 -m pip install Pillow`):
+
+```sh
+cd docs/demo
+mkdir -p _build && python3 build_cards.py _build
+ffmpeg -y -loop 1 -t 3 -i _build/00-title.png -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -r 10 -c:v libx264 -pix_fmt yuv420p _build/00.mp4
+for g in witness-1-seed witness-2-dispute witness-3-verify-greens; do
+  ffmpeg -y -i ${g}.gif -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -r 10 -c:v libx264 -pix_fmt yuv420p _build/${g}.mp4
+done
+ffmpeg -y -loop 1 -t 5 -i _build/99-outro.png -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -r 10 -c:v libx264 -pix_fmt yuv420p _build/99.mp4
+printf "file '00.mp4'\nfile 'witness-1-seed.mp4'\nfile 'witness-2-dispute.mp4'\nfile 'witness-3-verify-greens.mp4'\nfile '99.mp4'\n" > _build/list.txt
+ffmpeg -y -f concat -safe 0 -i _build/list.txt -c copy witness-demo.mp4
+```
 
 </details>
 
