@@ -115,9 +115,46 @@ def make_outro(path: str) -> None:
     img.save(path)
 
 
+def make_step_divider(path: str, step_num: int, step_total: int,
+                      title: str, sub: str, color) -> None:
+    img = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(img)
+    d.rectangle([0, 0, W, 6], fill=color)
+    # Step counter at top
+    f_count = ImageFont.truetype(SFNS, 22)
+    counter = f"STEP {step_num} / {step_total}"
+    d.text((48, 36), counter, fill=GREY, font=f_count)
+    # Big step number on the left
+    f_num = ImageFont.truetype(SFNS, 280)
+    num_str = str(step_num)
+    bbox = d.textbbox((0, 0), num_str, font=f_num)
+    num_w = bbox[2] - bbox[0]
+    d.text((180, 280), num_str, fill=color, font=f_num)
+    # Title to the right of the number
+    f_t = ImageFont.truetype(SFNS, 64)
+    title_x = 180 + num_w + 60
+    d.text((title_x, 340), title, fill=WHITE, font=f_t)
+    # Subtitle below title
+    f_s = ImageFont.truetype(SFNS, 28)
+    d.text((title_x + 4, 440), sub, fill=GREY, font=f_s)
+    img.save(path)
+
+
 if __name__ == "__main__":
     import sys
     out_dir = sys.argv[1] if len(sys.argv) > 1 else "."
     make_title(f"{out_dir}/00-title.png")
     make_outro(f"{out_dir}/99-outro.png")
-    print(f"wrote 00-title.png + 99-outro.png to {out_dir}")
+    make_step_divider(f"{out_dir}/10-step1.png", 1, 3,
+                      "Seed a new conversation",
+                      "encrypt client-side, upload to 0G Storage (~20s)",
+                      color=EMERALD)
+    make_step_divider(f"{out_dir}/20-step2.png", 2, 3,
+                      "File a dispute",
+                      "3-LLM jury (Groq) + judge + 0G Chain anchor (~25s)",
+                      color=AMBER)
+    make_step_divider(f"{out_dir}/30-step3.png", 3, 3,
+                      "Verify trustlessly",
+                      "0G Storage / local / chain / decrypted = 4 cross-checks",
+                      color=INDIGO)
+    print(f"wrote all cards to {out_dir}")
