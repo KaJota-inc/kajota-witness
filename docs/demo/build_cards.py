@@ -115,6 +115,42 @@ def make_outro(path: str) -> None:
     img.save(path)
 
 
+def make_context_card(path: str, heading: str, body_lines: list[tuple[str, tuple]],
+                      footer: str = "", accent_color=None) -> None:
+    """Context/explanation card — dark background, heading + bullet lines + optional footer.
+
+    body_lines: list of (text, color) tuples. Use AMBER for emphasis, WHITE for plain.
+    """
+    if accent_color is None:
+        accent_color = AMBER
+    img = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(img)
+    d.rectangle([0, 0, W, 6], fill=accent_color)
+    # Heading
+    f_h = ImageFont.truetype(SFNS, 56)
+    bbox = d.textbbox((0, 0), heading, font=f_h)
+    d.text(((W - (bbox[2] - bbox[0])) / 2 - bbox[0], 130),
+           heading, fill=accent_color, font=f_h)
+    # Body lines — left-aligned in a centered block
+    f_body = ImageFont.truetype(SFNS, 32)
+    line_height = 56
+    block_height = len(body_lines) * line_height
+    y = (H - block_height) / 2 + 80
+    # Find widest line for centering
+    max_w = max((d.textbbox((0, 0), t, font=f_body)[2] for t, _ in body_lines), default=0)
+    x = (W - max_w) / 2
+    for text, color in body_lines:
+        d.text((x, y), text, fill=color, font=f_body)
+        y += line_height
+    # Footer (smaller, grey)
+    if footer:
+        f_f = ImageFont.truetype(SFNS, 22)
+        bbox = d.textbbox((0, 0), footer, font=f_f)
+        d.text(((W - (bbox[2] - bbox[0])) / 2 - bbox[0], H - 110),
+               footer, fill=GREY, font=f_f)
+    img.save(path)
+
+
 def make_step_divider(path: str, step_num: int, step_total: int,
                       title: str, sub: str, color) -> None:
     img = Image.new("RGB", (W, H), BG)
@@ -144,17 +180,51 @@ if __name__ == "__main__":
     import sys
     out_dir = sys.argv[1] if len(sys.argv) > 1 else "."
     make_title(f"{out_dir}/00-title.png")
-    make_outro(f"{out_dir}/99-outro.png")
+    make_context_card(
+        f"{out_dir}/05-context-problem.png",
+        "The problem",
+        [
+            ("African micro-commerce sellers chat across", GREY),
+            ("WhatsApp, Instagram DMs, platform inboxes.", WHITE),
+            ("", WHITE),
+            ("None of those records are portable, seller-owned,", GREY),
+            ("or admissible when escrow disputes fire.", WHITE),
+        ],
+        footer="Witness fixes this by anchoring every conversation on 0G.",
+    )
+    make_context_card(
+        f"{out_dir}/06-context-arch.png",
+        "Three real 0G surfaces",
+        [
+            ("0G Storage   ->  encrypted chat + verdict blobs", EMERALD),
+            ("0G Chain     ->  settles every upload, issues every CID", AMBER),
+            ("WitnessAnchor->  public commitment, on-chain verdict root", INDIGO),
+        ],
+        footer="Each surface is load-bearing. Removing any one breaks the app.",
+    )
+    make_context_card(
+        f"{out_dir}/07-context-scenario.png",
+        "Today's scenario",
+        [
+            ("Buyer (Tola) needs a graduation dress by Thursday.", WHITE),
+            ("Seller (Amaka) promises Thursday delivery via GIG.", WHITE),
+            ("Dress arrives Saturday. Tola missed graduation.", AMBER),
+            ("", WHITE),
+            ("Watch: Seed -> File dispute -> Verify verdict", GREY),
+        ],
+        footer="The verdict appears LIVE on 0G Storage AND 0G Chain.",
+    )
     make_step_divider(f"{out_dir}/10-step1.png", 1, 3,
-                      "Seed a new conversation",
-                      "encrypt client-side, upload to 0G Storage (~20s)",
+                      "Seed the conversation",
+                      "fill the form, encrypt client-side, upload to 0G Storage",
                       color=EMERALD)
     make_step_divider(f"{out_dir}/20-step2.png", 2, 3,
-                      "File a dispute",
-                      "3-LLM jury (Groq) + judge + 0G Chain anchor (~25s)",
+                      "File the dispute",
+                      "embedding search + 3-LLM jury + judge + 0G Chain anchor",
                       color=AMBER)
     make_step_divider(f"{out_dir}/30-step3.png", 3, 3,
                       "Verify trustlessly",
-                      "0G Storage / local / chain / decrypted = 4 cross-checks",
+                      "anyone can paste the CID and watch 4 checks go green",
                       color=INDIGO)
-    print(f"wrote all cards to {out_dir}")
+    make_outro(f"{out_dir}/99-outro.png")
+    print(f"wrote all cards (title, 3 context, 3 dividers, outro) to {out_dir}")

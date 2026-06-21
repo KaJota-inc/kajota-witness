@@ -8,9 +8,11 @@
 
 ![Demo — file dispute, jury deliberates, verdict anchored on 0G Storage + Chain, anyone can verify](docs/demo/witness-FULL-demo.gif)
 
-🎬 **Step-by-step 54-second walkthrough:** [`docs/demo/witness-demo-steps.mp4`](docs/demo/witness-demo-steps.mp4) (732 KB)
-&nbsp;&nbsp;&nbsp;&nbsp;Title → STEP 1 SEED (emerald) → STEP 2 DISPUTE (amber) → STEP 3 VERIFY (indigo) → outro · each beat slowed for readability
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ Faster 30-second cut for social embeds: [`docs/demo/witness-demo.mp4`](docs/demo/witness-demo.mp4) (520 KB)
+🎬 **Full 84-second walkthrough (recommended):** [`docs/demo/witness-demo-walkthrough.mp4`](docs/demo/witness-demo-walkthrough.mp4) (848 KB)
+&nbsp;&nbsp;&nbsp;&nbsp;Title → 3 context cards (problem · arch · scenario) → STEP 1 SEED (emerald) → STEP 2 DISPUTE (amber) → STEP 3 VERIFY (indigo) → outro
+&nbsp;&nbsp;&nbsp;&nbsp;Scenario: buyer asks for a graduation dress with Thursday delivery promise → dress arrives Saturday → jury rules `refund_buyer` 80%
+
+Other cuts: [`witness-demo-steps.mp4`](docs/demo/witness-demo-steps.mp4) (54s, no context cards) · [`witness-demo.mp4`](docs/demo/witness-demo.mp4) (30s, fast)
 
 <details>
 <summary>Per-beat GIFs + how the MP4 is built</summary>
