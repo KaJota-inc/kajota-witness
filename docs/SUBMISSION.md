@@ -68,18 +68,27 @@ https://github.com/KaJota-inc/kajota-witness
 
 ## Live build / demo
 
+- **Live URL:** **https://kajota-witness.onrender.com**
+  - [`/ui`](https://kajota-witness.onrender.com/ui) — file disputes, watch the jury, see verdicts land on chain
+  - [`/verify`](https://kajota-witness.onrender.com/verify) — paste any of the sample CIDs below and see the 4-way cross-check
 - **Demo video (3 min):** [YOUR LOOM/YOUTUBE URL HERE — record per `docs/DEMO.md`]
 - **Local run instructions:** see `README.md` Quick Start section
 
+> ⏱ **Cold-start note:** Render free tier sleeps after 15min idle. First hit after a quiet stretch adds ~30s wake + ~30s embed-model rehydrate. An UptimeRobot ping on `/health` every 14 min keeps it warm for the judging window.
+
 ## On-chain artifacts (verifiable now)
+
+All produced by the **deployed Render instance** — judges can paste these into [the live `/verify` page](https://kajota-witness.onrender.com/verify) and watch all 4 cross-checks pass.
 
 | Artifact | Link |
 |---|---|
 | WitnessAnchor contract | https://chainscan-galileo.0g.ai/address/0x2f1D3a881cfbeA01Cf55f3cAd125aA32Bf8cEC94 |
 | Contract deploy tx | https://chainscan-galileo.0g.ai/tx/0x2a5b4224ae342279c3c22384402195d3109a4d3ee9afa24a27c45a0e4d2ea784 |
-| Sample chat blob on 0G Storage | https://storagescan-galileo.0g.ai/tx/0xaf6e55e03d2b4d50b7b92e4ecd41207f3e9ce7a533feede3164409dbe79a43c9 |
-| Sample verdict blob on 0G Storage | https://storagescan-galileo.0g.ai/tx/0x4ad25660d1cec586b821d302aff42a8ef1b41af652753d457683f5a5ae81fd34 |
-| Sample verdict anchor tx | https://chainscan-galileo.0g.ai/tx/0xc71be3b624e5b78a3460de17cbf3525920dfedaace827ea540cf62a9ec33f352 |
+| Sample chat blob (sandals-haggling) | https://storagescan-galileo.0g.ai/tx/0x9d84ed8ca92a1c7b67f94d51a0b164ce29293bb35e0bd684fc34b5d589f19c0f |
+| Sample chat blob (return-policy) | https://storagescan-galileo.0g.ai/tx/0xbe8ef53ff4c76c78a4c0dafc018dba35ba2567ea52bdad8d01dd35446017e179 |
+| Sample chat blob (delivery-eta) | https://storagescan-galileo.0g.ai/tx/0xacdb7775f330339eb0c3533de297c4411145583b210db2aea442e0791d25c7a2 |
+| Sample verdict blob (release_to_seller) | https://storagescan-galileo.0g.ai/tx/0xa9183d1ac0e9558fbac8501ce6034383122d36b4955259cf14d02448c092e5fb |
+| Sample verdict on-chain anchor tx | https://chainscan-galileo.0g.ai/tx/0x7e58a83d7497caf7b83877fa818e86a2502903c9c7367a9c9dbd0db888942358 |
 
 ## Stack
 
@@ -110,9 +119,14 @@ $0. 0G testnet + Groq free tier.
 
 ## Submission checklist
 
+- [x] Repo public on GitHub (`KaJota-inc/kajota-witness`)
+- [x] WitnessAnchor contract deployed on 0G Galileo
+- [x] Companion Coach integration branch + PR (`KaJota-inc/kajota-coach#2`)
+- [x] **Live build deployed at https://kajota-witness.onrender.com**
+- [x] Sample CIDs on-chain + verifiable via deployed `/verify`
+- [x] DEMO.md + SUBMISSION.md ready
 - [ ] Recorded 3-min demo per `docs/DEMO.md`
 - [ ] Uploaded video to Loom / YouTube (unlisted is fine)
-- [ ] Repo is public on GitHub (✅ already done)
 - [ ] Replaced `[YOUR LOOM/YOUTUBE URL HERE]` above with real URL
 - [ ] Filled the arena form using these blocks
 - [ ] Submitted before Mon Jun 22, 2026 18:00 UTC (Round 1 deadline buffer)

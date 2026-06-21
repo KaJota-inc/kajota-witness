@@ -2,6 +2,10 @@
 
 **Encrypted seller memory + AI jury for African micro-commerce disputes — all on 0G Galileo.**
 
+> 🌐 **Live demo:** https://kajota-witness.onrender.com · [`/ui`](https://kajota-witness.onrender.com/ui) · [`/verify`](https://kajota-witness.onrender.com/verify)
+> 📜 **Anchor contract:** [`0x2f1D3a88…cEC94`](https://chainscan-galileo.0g.ai/address/0x2f1D3a881cfbeA01Cf55f3cAd125aA32Bf8cEC94) on 0G Galileo
+> ⌖ **Try /verify yourself:** paste `0xa9183d1ac0e9558fbac8501ce6034383122d36b4955259cf14d02448c092e5fb` into the live `/verify` page — all 4 cross-checks go green including `matchesStorageCid=true`
+
 A standalone Fastify service that gives Kajota Coach (a sales-assistant agent for African sellers) cross-session memory that the seller actually owns, and an AI jury that pulls those exact conversations from 0G Storage as evidence when a Mesh escrow dispute fires.
 
 Built for [0G Zero Cup 2026 — Round 1](https://0g.ai/arena/zero-cup).
