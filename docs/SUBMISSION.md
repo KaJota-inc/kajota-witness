@@ -123,9 +123,23 @@ $0. 0G testnet + Groq free tier.
 - **No Mesh escrow integration yet.** The current `WitnessAnchor` contract records verdicts but does not release escrowed funds. Wiring to KaJota's existing Mesh escrow on Mantle Sepolia is the natural next step but out of scope for this round.
 - **JSON-file index.** SQLite or LibSQL is the obvious upgrade; not needed at hackathon scale.
 
+## Coach integration — already shipped
+
+The companion patch in `KaJota-inc/kajota-coach` is live on branch [`feat/witness-memory-integration`](https://github.com/KaJota-inc/kajota-coach/tree/feat/witness-memory-integration) (commit `1d7c570`).
+
+After every Coach conversation turn, the agent's FastAPI server fires a fire-and-forget POST to Witness `/memory` mirroring the (user message, agent response) pair as an encrypted blob on 0G Storage. The integration is:
+
+- **Non-blocking** — `asyncio.create_task()` runs the POST in the background. Coach's chat response never waits on the ~17s 0G upload.
+- **Soft-fail** — if Witness is down, Coach logs one line and moves on. Witness availability never breaks Coach.
+- **Opt-in** — disabled unless `WITNESS_URL` env var is set. Coach behaves byte-identically to before the patch when off.
+- **End-to-end verified** — `agent/scripts/witness_smoke.py` posts a fake turn through the real `witness_client.py` and confirms a CID lands.
+- **Minimal splice** — one new isolated module + one import + one one-line call in `_run_agent_turn()`.
+
+Translation: Mesh disputes can now pull real Coach conversations from 0G as evidence. Not a roadmap promise — running today.
+
 ## What we'd build next
 
-1. **Coach client patch** — wire kajota-coach to POST every chat turn to Witness `/memory` in real time. ~30 lines of glue. Mesh & Witness then become the actual production memory layer for African sellers.
-2. **Mesh escrow integration** — when WitnessAnchor records a verdict, automatically call `releaseToSeller()` or `refundToBuyer()` on the existing Mesh escrow contracts. Closes the loop from chat → dispute → ruling → fund movement.
-3. **Hybrid retrieval** — BM25 + embedding cosine, weighted blend. Fixes the lexical-overlap miss documented in README.
-4. **Multi-seller scaling** — per-seller key derivation (HKDF on a Privy-managed root key), per-seller index sharding, optional 0G KV for the index itself (eat our own dogfood).
+1. **Mesh escrow integration** — when WitnessAnchor records a verdict, automatically call `releaseToSeller()` or `refundToBuyer()` on the existing Mesh escrow contracts on Mantle Sepolia. Closes the loop from chat → dispute → ruling → fund movement.
+2. **Hybrid retrieval** — BM25 + embedding cosine, weighted blend. Fixes the lexical-overlap miss documented in README.
+3. **Multi-seller scaling** — per-seller key derivation (HKDF on a Privy-managed root key), per-seller index sharding, optional 0G KV for the index itself (eat our own dogfood).
+4. **Deploy Coach with WITNESS_URL set** — the Render-deployed instance currently runs without the mirror. Flipping a single env var in Render makes every production seller turn flow into Witness.

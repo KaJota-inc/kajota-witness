@@ -176,10 +176,13 @@ src/
 
 ---
 
+## Companion Coach integration
+
+The companion patch in [`KaJota-inc/kajota-coach@feat/witness-memory-integration`](https://github.com/KaJota-inc/kajota-coach/tree/feat/witness-memory-integration) wires the Coach FastAPI server to mirror every conversation turn into Witness. Fire-and-forget POST to `/memory` after each turn; non-blocking; soft-fail; opt-in via `WITNESS_URL` env var. End-to-end verified with the included smoke script. See [Coach agent README](https://github.com/KaJota-inc/kajota-coach/blob/feat/witness-memory-integration/agent/README.md) for the full env + smoke recipe.
+
 ## What's not in scope (yet)
 
-- **Coach client patch** — Coach already exists ([KaJota-inc/kajota-coach](https://github.com/KaJota-inc/kajota-coach)) but for this round Witness is demoed via seeded chats. A 30-line client patch in Coach is the trivial next step.
-- **Mesh escrow on-chain anchor** — verdict root hash is stored on 0G; the final step is anchoring it to the existing Mesh escrow contract on Mantle/Ethereum Sepolia for actual fund release. Architecturally clean, deferred for time.
+- **Mesh escrow on-chain release** — the WitnessAnchor contract records verdicts on 0G Chain; the natural next step is wiring those records to actually call `releaseToSeller()` / `refundToBuyer()` on the existing Mesh escrow contracts on Mantle Sepolia. Architecturally clean, deferred for time.
 - **Hybrid retrieval** — small MiniLM model + short chats sometimes misses on lexical edge cases (e.g. "shipping" vs "delivered"). Top-K=3 mitigates for the jury, but a BM25 + embedding hybrid is the proper fix.
 
 ---
