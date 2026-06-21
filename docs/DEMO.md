@@ -6,6 +6,7 @@ For recording a screencast you can paste into the 0G Arena submission form. Targ
 
 ## Before you hit record
 
+- [ ] **Pre-warm the embedding model:** `cd ~/Documents/kajota-witness && npx tsx src/test-memory.ts` — first run downloads ~80MB of `@xenova/transformers` weights into `.cache/`. Skip this and your first live dispute will hang ~30s on the model pull.
 - [ ] `cd ~/Documents/kajota-witness && npm run start` — wait for `kajota-witness listening on http://localhost:4022`
 - [ ] Open `http://localhost:4022/ui` in a fresh browser tab
 - [ ] Open `http://localhost:4022/verify` in a second tab (you'll switch to it at 02:25)
@@ -122,6 +123,7 @@ All three resolve cleanly against the seeded chats.
 - WitnessAnchor contract: `0x2f1D3a881cfbeA01Cf55f3cAd125aA32Bf8cEC94`
 - 0G Galileo (chainId 16602)
 - Free testnet faucet: https://faucet.0g.ai
+- Companion Coach integration branch: https://github.com/KaJota-inc/kajota-coach/tree/feat/witness-memory-integration (commit `1d7c570`)
 
 ## What to caption / pin in the video description
 

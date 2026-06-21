@@ -122,11 +122,13 @@ Then:
 npm run hello                      # round-trip a blob through 0G (de-risk SDK)
 npx tsx src/probe-llm.ts           # 1-call Groq ping (de-risk LLM)
 npx tsx scripts/deploy-anchor.ts   # deploy WitnessAnchor to 0G Galileo (writes WITNESS_ANCHOR_ADDRESS to .env)
-npx tsx src/test-memory.ts         # seed 3 chats + run 3 retrieval queries
+npx tsx src/test-memory.ts         # seed 3 chats + run 3 retrieval queries (pre-warms ~80MB embedding model — first run is slow, subsequent runs hit .cache/)
 npx tsx src/test-jury.ts           # full 3-dispute jury smoke test
 npm run start                      # boot Fastify server
 # open http://localhost:4022/ui
 ```
+
+> **Tip:** Run `test-memory.ts` once after cloning. It downloads the `@xenova/transformers` model into `.cache/transformers/` (~80MB) so the first `/dispute` call on a fresh boot doesn't hang for 30s pulling the model.
 
 ---
 
