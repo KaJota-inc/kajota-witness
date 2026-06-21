@@ -88,7 +88,7 @@ The seller said ₦6,000 for the sandals and refused to give me any discount.
 **Action:** Highlight the green ✓ on the `matchesStorageCid: true` line.
 
 **Say:**
-> "Three real 0G surfaces — Storage, Chain, deployed contract — each doing work the app can't run without. Built end-to-end during the tournament window."
+> "Three real 0G surfaces — Storage, Chain, deployed contract — each doing work the app can't run without. And the companion patch in kajota-coach is already live on a branch — every Coach turn fires into this same memory layer in production. Built end-to-end during the tournament window."
 
 ---
 
