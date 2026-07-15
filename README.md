@@ -237,3 +237,13 @@ MIT.
 Built start-to-finish during the Zero Cup tournament window — no pre-existing code. Submitted Mon Jun 22, 2026 to https://0g.ai/arena/zero-cup.
 
 Co-author trail and milestone-by-milestone progress are in the commit history.
+
+<!-- kajota-hub-note -->
+## KaJota infrastructure — this service is on the hub
+
+Deployed as part of the consolidated **[kajota-hub](https://kajota-hub.onrender.com)** instance.
+
+- **Live:** https://kajota-hub.onrender.com/witness — `/ui`, `/verify`, `/health`
+- Previously standalone at `https://kajota-witness.onrender.com`
+
+See [HUB_MIGRATION.md](HUB_MIGRATION.md) for the full mapping.
